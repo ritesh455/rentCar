@@ -1,18 +1,12 @@
 import { useEffect, useState } from 'react'
+import Home from './components/Home'
 
 function App() {
 
-function callOnce(){
-  alert('Hello');
-}
-useEffect(()=>{
-  
-callOnce()
-},[])
 
   return (
     <>
-   
+   <Home/>
     </>
   )
 }
