@@ -26,3 +26,7 @@ app.listen(PORT, () => {
 
     const authRoutes = require("./modules/auth/auth.routes.js");
 app.use("/auth", authRoutes);
+
+const vehicleRoutes = require("./modules/vehicles/vehicle.routes");
+app.use("/vehicles", vehicleRoutes);
+

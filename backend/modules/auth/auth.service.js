@@ -13,14 +13,15 @@ exports.register = async (data) => {
   const { name, email, phone, password, dob } = data;
 
   // check existing owner
-  const ownerSnap = await db
-    .collection("owners")
-    .where("email", "==", email)
-    .limit(1)
-    .get();
+  const emailQuery = db.collection("owners").where("email", "==", email).limit(1).get();
+  const phoneQuery = db.collection("owners").where("phone", "==", phone).limit(1).get();
+  const [emailSnap, phoneSnap] = await Promise.all([emailQuery, phoneQuery]);
 
-  if (!ownerSnap.empty) {
-    throw { status: 409, message: "Owner already registered" };
+  if (!emailSnap.empty) {
+    throw { status: 409, message: "Email already registered" };
+  }
+  if (!phoneSnap.empty) {
+    throw { status: 409, message: "Phone number already registered" };
   }
 
   const otp = generateOtp();
