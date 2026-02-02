@@ -2,6 +2,9 @@ import Footer from "../components/footer"
 import Navbar from "../components/navbar"
 import CarCard from "../components/CarCard"
 import HomePages from "../components/HomePages"
+import StepToBook from "../components/StepsToBook"
+import ReportPage from "./ReportPage"
+import Booking from "../components/Booking"
 import '../index.css'
 
 function Home(){
@@ -11,21 +14,32 @@ function Home(){
         <Navbar/>
         </div>
 
-<div className="pb-24">
+<div className="pb-10">
 
       <HomePages/>
 
      {/* All carCard list */}
-     {/* <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2 ">
+    <div className="" >
+        <h1 className="text-4xl font-bold text-gray-900 text-center" >Choose the Prefect car for your trip</h1>
+    </div>
+     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2 mb-2">
       <CarCard/>
       <CarCard/>
       <CarCard/>
       <CarCard/>
-      </div> */}
+      <CarCard/>
+      <CarCard/>
+      </div>
+
+      <StepToBook/>
+
 
       </div>
 
-<div className="fixed bottom-0 left-0 w-full bg-[#101828] shadow z-10">
+{/* <Booking/> */}
+
+
+<div className="bottom-0 left-0 w-full bg-[#101828] shadow z-10">
   <Footer/>
 </div>
         

@@ -1,12 +1,17 @@
-import { useEffect, useState } from 'react'
-import Home from './Pages/Home'
-
+import { Routes, Route } from "react-router-dom";
+import Home from "./Pages/Home";
+import Login from "./Pages/UserLogin";
+import Register from "./Pages/UserReg";
 function App() {
 
 
   return (
     <>
-   <Home/>
+    <Routes>
+      <Route path="/" element={<Home />} />
+      <Route path="/login" element={<Login />} />
+      <Route path="/register" element={<Register />} />
+    </Routes>
     </>
   )
 }
