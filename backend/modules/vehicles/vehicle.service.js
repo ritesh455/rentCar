@@ -22,12 +22,27 @@ exports.addVehicle = async (data, owner) => {
     brand,
     model,
     vehicleNumber,
+
+    fuelType,
+    seats,
     pricePerDay,
+
+    documents:{
+      rc: {
+      storagePath: rcStoragePath,
+      isVerified: false
+    },
+    noc: {
+      storagePath: nocStoragePath,
+      isVerified: false
+    }
+    },
 
     ownerId: owner.ownerId,
     ownerEmail: owner.email,
 
     isActive: true,
+    isVerifiedByAdmin: false,
     createdAt: new Date()
   });
 
@@ -52,6 +67,7 @@ exports.getPublicVehicles = async () => {
   const snap = await db
     .collection("vehicles")
     .where("isActive", "==", true)
+    .where("isVerifiedByAdmin", "==", true)
     .get();
 
   const vehicles = snap.docs.map(doc => {
@@ -74,12 +90,13 @@ exports.getPublicVehicleById = async (vehicleId) => {
   if (!docRef.exists) {
     throw { status: 404, message: "Vehicle not found" };
   }
-
+  
   const data = docRef.data();
-
-  if (!data.isActive) {
+  
+  if (!data.isActive || !data.isVerifiedByAdmin) {
     throw { status: 404, message: "Vehicle not available" };
   }
+
 
   return {
     id: docRef.id,

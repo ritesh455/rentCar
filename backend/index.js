@@ -23,10 +23,17 @@ app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
 });
 
+const userRoutes = require("./modules/users/user.routes");
+app.use("/users", userRoutes);
 
-    const authRoutes = require("./modules/auth/auth.routes.js");
+const authRoutes = require("./modules/auth/auth.routes.js");
 app.use("/auth", authRoutes);
 
 const vehicleRoutes = require("./modules/vehicles/vehicle.routes");
 app.use("/vehicles", vehicleRoutes);
 
+const bookingRoutes = require("./modules/bookings/booking.routes");
+app.use("/bookings", bookingRoutes);
+
+const uploadRoutes = require("./routes/upload.routes");
+app.use("/upload", uploadRoutes);

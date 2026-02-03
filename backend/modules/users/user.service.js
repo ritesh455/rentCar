@@ -1,67 +1,59 @@
 const db = require("../../config/firebase");
+const validator = require("./user.validation");
 const { generateOtp, hashOtp, compareOtp } = require("../../utils/otp.util");
 const { hashPassword, comparePassword } = require("../../utils/password.util");
-const validator = require("./auth.validation");
 const { generateToken } = require("../../utils/jwt.util");
-const { encrypt } = require("../../utils/crypto.util");
 
 const OTP_EXPIRY_MIN = 5;
 
-// REGISTER → SEND OTP
+// 1️⃣ REGISTER USER → SEND OTP
 exports.register = async (data) => {
   validator.validateRegister(data);
 
-  const { name,  email,  phone,  password,  dob,  address,  aadhaarStoragePath } = data;
+  const { name, email, phone, password } = data;
 
-  // check existing owner
-  const emailQuery = db.collection("owners").where("email", "==", email).limit(1).get();
-  const phoneQuery = db.collection("owners").where("phone", "==", phone).limit(1).get();
-  const [emailSnap, phoneSnap] = await Promise.all([emailQuery, phoneQuery]);
+  // check existing user
+  const snap = await db
+    .collection("users")
+    .where("email", "==", email)
+    .limit(1)
+    .get();
 
-  if (!emailSnap.empty) {
-    throw { status: 409, message: "Email already registered" };
-  }
-  if (!phoneSnap.empty) {
-    throw { status: 409, message: "Phone number already registered" };
+  if (!snap.empty) {
+    throw { status: 409, message: "User already registered" };
   }
 
   const otp = generateOtp();
   const otpHash = await hashOtp(otp);
   const passwordHash = await hashPassword(password);
 
-  const expiresAt = new Date(); 
+  const expiresAt = new Date();
   expiresAt.setMinutes(expiresAt.getMinutes() + OTP_EXPIRY_MIN);
 
   await db.collection("otp_requests").doc(email).set({
     identifier: email,
-    accountType: "OWNER" ,
+    accountType: "USER",
     otpHash,
     expiresAt,
     attemptsLeft: 3,
     tempUserData: {
       name,
       email,
-      phone: phone ,
-      passwordHash,
-      dob: dob ,
-      addressEncrypted: encrypt(address),
-      aadhaar: {
-        storagePath: aadhaarStoragePath,
-        isVerified: false
-      },
+      phone: phone || null,
+      passwordHash
     },
     createdAt: new Date()
   });
 
-  // TEMP: log OTP (replace with email/SMS later)
-  console.log("OTP for", email, ":", otp);
+  // DEV ONLY
+  console.log(`USER OTP for ${email}:`, otp);
 
   return { message: "OTP sent successfully" };
 };
 
-// VERIFY OTP → CREATE OWNER
+// 2️⃣ VERIFY OTP → CREATE USER
 exports.verifyOtp = async ({ email, otp }) => {
-  validator.validateOtp({ email, otp });
+  validator.validateVerifyOtp({ email, otp });
 
   const ref = db.collection("otp_requests").doc(email);
   const snap = await ref.get();
@@ -71,6 +63,10 @@ exports.verifyOtp = async ({ email, otp }) => {
   }
 
   const data = snap.data();
+
+  if (data.accountType !== "USER") {
+    throw { status: 400, message: "Invalid OTP request type" };
+  }
 
   if (data.expiresAt.toDate() < new Date()) {
     await ref.delete();
@@ -89,7 +85,7 @@ exports.verifyOtp = async ({ email, otp }) => {
     throw { status: 400, message: "Invalid OTP" };
   }
 
-  await db.collection("owners").add({
+  await db.collection("users").add({
     ...data.tempUserData,
     isVerified: true,
     createdAt: new Date()
@@ -97,16 +93,15 @@ exports.verifyOtp = async ({ email, otp }) => {
 
   await ref.delete();
 
-  return { message: "Registration successful" };
+  return { message: "User registered successfully" };
 };
 
-// LOGIN
-
+// 3️⃣ USER LOGIN
 exports.login = async ({ email, password }) => {
   validator.validateLogin({ email, password });
 
   const snap = await db
-    .collection("owners")
+    .collection("users")
     .where("email", "==", email)
     .limit(1)
     .get();
@@ -116,27 +111,26 @@ exports.login = async ({ email, password }) => {
   }
 
   const doc = snap.docs[0];
-  const owner = doc.data();
+  const user = doc.data();
 
-  const valid = await comparePassword(password, owner.passwordHash);
+  const valid = await comparePassword(password, user.passwordHash);
   if (!valid) {
     throw { status: 401, message: "Invalid credentials" };
   }
 
-  // 🔑 JWT payload
   const token = generateToken({
-    ownerId: doc.id,
-    email: owner.email
+    userId: doc.id,
+    email: user.email,
+    role: "USER"
   });
 
   return {
     message: "Login successful",
     token,
-    owner: {
+    user: {
       id: doc.id,
-      email: owner.email,
-      name: owner.name
+      name: user.name,
+      email: user.email
     }
   };
 };
-
