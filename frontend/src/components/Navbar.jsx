@@ -1,6 +1,6 @@
-import { useState } from "react";
+import { useState, useContext } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import UserLogin from "../Pages/UserLogin";
+import { DataContext } from "../context/DataContext";
 
 // navItems now accepts contactRef
 const navItems = (contactRef) => [
@@ -15,15 +15,18 @@ const navItems = (contactRef) => [
 
 const Navbar = ({ contactRef }) => {
   const [open, setOpen] = useState(false);
-  const [showLogin, setShowLogin] = useState(false);
   const navigate = useNavigate();
 
-  // Check login status
-  const user = JSON.parse(localStorage.getItem("user"));
+  // ✅ AUTH STATE FROM CONTEXT (NOT localStorage)
+  const { isAuthenticated, logout } = useContext(DataContext);
 
-  const handleLogout = () => {
-    localStorage.removeItem("user");
-    navigate("/");
+  const handleLogout = async () => {
+    try {
+      await logout(); // backend clears cookie
+      navigate("/login");
+    } catch (error) {
+      alert("Logout failed");
+    }
   };
 
   const items = navItems(contactRef);
@@ -55,9 +58,13 @@ const Navbar = ({ contactRef }) => {
             </li>
           ))}
 
-          {user ? (
+          {/* ✅ AUTH BASED BUTTONS */}
+          {isAuthenticated ? (
             <>
-              <Link to="/profile" className="hover:text-blue-500 font-medium">
+              <Link
+                to="/profile"
+                className="hover:text-blue-500 font-medium"
+              >
                 Profile
               </Link>
 
@@ -71,11 +78,9 @@ const Navbar = ({ contactRef }) => {
           ) : (
             <>
               <Link to="/login">
-              <button
-                className="bg-green-600 text-white px-5 py-1 rounded"
-              >
-                Login
-              </button>
+                <button className="bg-green-600 text-white px-5 py-1 rounded">
+                  Login
+                </button>
               </Link>
 
               <Link to="/register">
@@ -123,7 +128,8 @@ const Navbar = ({ contactRef }) => {
             </li>
           ))}
 
-          {user ? (
+          {/* ✅ AUTH BASED MOBILE MENU */}
+          {isAuthenticated ? (
             <>
               <Link
                 to="/profile"
@@ -145,18 +151,13 @@ const Navbar = ({ contactRef }) => {
             </>
           ) : (
             <>
-              <Link to="/login">
-              <button
-                className="bg-green-600 text-white px-5 py-1 rounded w-full"
-              >
-                Login
-              </button>
+              <Link to="/login" onClick={() => setOpen(false)}>
+                <button className="bg-green-600 text-white px-5 py-1 rounded w-full">
+                  Login
+                </button>
               </Link>
 
-              <Link
-                to="/register"
-                onClick={() => setOpen(false)}
-              >
+              <Link to="/register" onClick={() => setOpen(false)}>
                 <button className="bg-gray-800 text-white px-5 py-1 rounded w-full">
                   Register
                 </button>
@@ -165,9 +166,6 @@ const Navbar = ({ contactRef }) => {
           )}
         </ul>
       )}
-
-      {/* Login Modal */}
-      {showLogin && <UserLogin onClose={() => setShowLogin(false)} />}
     </nav>
   );
 };

@@ -6,6 +6,7 @@ import Vehicles from "./Pages/Vehicles";
 import VehicleDetails from "./Pages/VehicleDetails";
 import RentalSummary from "./Pages/RentalSummary";
 import Profile from "./Pages/Profile";
+import Otp from "./Pages/otp";
 function App() {
 
 
@@ -19,6 +20,7 @@ function App() {
        <Route path="/vehicle/:id" element={<VehicleDetails />} />
       <Route path="/summary" element={<RentalSummary />} />
       <Route path="/profile" element={<Profile />} />
+       <Route path="/otp" element={<Otp />} />
     </Routes>
     </>
   )

@@ -38,13 +38,19 @@ export default function UserReg() {
     dob: formData.dob,
     password: formData.password,
   };
+  // console.log("📤 Frontend sending data:", formData);
 
   try {
     await register(payload);
+    // console.log("📤 Frontend sending data:", payload);
     alert("Registration successful");
-    navigate("/login");
+    navigate("/otp",{
+      state: {
+    email: payload.email,   // 👈 send email
+  },
+    });
   } catch (error) {
-    alert(error.message || "Registration failed");
+    alert(error.response.data.message || "Registration failed");
   }
 };
 

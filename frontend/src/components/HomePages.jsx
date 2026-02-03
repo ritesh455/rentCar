@@ -1,17 +1,17 @@
 import { useNavigate } from "react-router-dom";
 
 function HomePages() {
-  const navigate = useNavigate();
+ const navigate = useNavigate();
 
-  // Check login status
-  const isLoggedIn = localStorage.getItem("user");
+  // ✅ Correct login status check
+  const isLoggedIn = localStorage.getItem("isLoggedIn") === "true";
+  // OR: const isLoggedIn = !!localStorage.getItem("token");
 
-  // Handle protected navigation
   const handleReserveCar = () => {
     if (isLoggedIn) {
-      navigate("/vehicles");
+      navigate("/vehicles");   // ✅ access car details
     } else {
-      navigate("/login"); // change to modal if needed
+      navigate("/login");      // ❌ force login
     }
   };
 
