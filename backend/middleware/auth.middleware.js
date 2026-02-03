@@ -1,18 +1,14 @@
 const { verifyToken } = require("../utils/jwt.util");
 
 module.exports = (req, res, next) => {
-  const authHeader = req.headers.authorization;
+  const token = req.cookies.token;
 
-  if (!authHeader || !authHeader.startsWith("Bearer ")) {
-    return res.status(401).json({ message: "Authorization token missing" });
+  if (!token) {
+    return res.status(401).json({ message: "Not authenticated" });
   }
 
   try {
-    const token = authHeader.split(" ")[1];
-    const decoded = verifyToken(token);
-
-    // attach owner info to request
-    req.user = decoded;
+    req.user = verifyToken(token);
     next();
   } catch (err) {
     return res.status(401).json({ message: "Invalid or expired token" });

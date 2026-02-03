@@ -24,8 +24,7 @@ app.listen(PORT, () => {
 });
 
 const cookieParser = require("cookie-parser");
-app.use(cookieParser());
-
+app.use(cookieParser()); 
 
 const userRoutes = require("./modules/users/user.routes");
 app.use("/users", userRoutes);
