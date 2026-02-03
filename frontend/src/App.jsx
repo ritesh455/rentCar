@@ -5,6 +5,7 @@ import Register from "./Pages/UserReg";
 import Vehicles from "./Pages/Vehicles";
 import VehicleDetails from "./Pages/VehicleDetails";
 import RentalSummary from "./Pages/RentalSummary";
+import Profile from "./Pages/Profile";
 function App() {
 
 
@@ -17,6 +18,7 @@ function App() {
        <Route path="/vehicles" element={<Vehicles />} />
        <Route path="/vehicle/:id" element={<VehicleDetails />} />
       <Route path="/summary" element={<RentalSummary />} />
+      <Route path="/profile" element={<Profile />} />
     </Routes>
     </>
   )

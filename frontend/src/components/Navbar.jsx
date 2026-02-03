@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import UserLogin from "../Pages/UserLogin";
 
 const navItems = [
@@ -11,6 +11,15 @@ const navItems = [
 const Navbar = () => {
   const [open, setOpen] = useState(false);
   const [showLogin, setShowLogin] = useState(false);
+  const navigate = useNavigate();
+
+  // Check login status
+  const user = JSON.parse(localStorage.getItem("user"));
+
+  const handleLogout = () => {
+    localStorage.removeItem("user");
+    navigate("/");
+  };
 
   return (
     <nav className="bg-white shadow-md">
@@ -30,18 +39,38 @@ const Navbar = () => {
             </li>
           ))}
 
-          <button
-            onClick={() => setShowLogin(true)}
-            className="bg-green-600 text-white px-5 py-1 rounded"
-          >
-            Login
-          </button>
+          {user ? (
+            <>
+              <Link
+                to="/profile"
+                className="hover:text-blue-500 font-medium"
+              >
+                Profile
+              </Link>
 
-          <Link to="/register">
-            <button className="bg-gray-800 text-white px-5 py-1 rounded">
-              Register
-            </button>
-          </Link>
+              <button
+                onClick={handleLogout}
+                className="bg-red-600 text-white px-5 py-1 rounded"
+              >
+                Logout
+              </button>
+            </>
+          ) : (
+            <>
+              <button
+                onClick={() => setShowLogin(true)}
+                className="bg-green-600 text-white px-5 py-1 rounded"
+              >
+                Login
+              </button>
+
+              <Link to="/register">
+                <button className="bg-gray-800 text-white px-5 py-1 rounded">
+                  Register
+                </button>
+              </Link>
+            </>
+          )}
         </ul>
 
         {/* Mobile Menu Button */}
@@ -68,21 +97,45 @@ const Navbar = () => {
             </li>
           ))}
 
-          <button
-            onClick={() => {
-              setShowLogin(true);
-              setOpen(false);
-            }}
-            className="bg-green-600 text-white px-5 py-1 rounded w-full"
-          >
-            Login
-          </button>
+          {user ? (
+            <>
+              <Link
+                to="/profile"
+                onClick={() => setOpen(false)}
+                className="block p-2 rounded hover:bg-gray-200"
+              >
+                Profile
+              </Link>
 
-          <Link to="/register" onClick={() => setOpen(false)}>
-            <button className="bg-gray-800 text-white px-5 py-1 rounded w-full">
-              Register
-            </button>
-          </Link>
+              <button
+                onClick={() => {
+                  handleLogout();
+                  setOpen(false);
+                }}
+                className="bg-red-600 text-white px-5 py-1 rounded w-full"
+              >
+                Logout
+              </button>
+            </>
+          ) : (
+            <>
+              <button
+                onClick={() => {
+                  setShowLogin(true);
+                  setOpen(false);
+                }}
+                className="bg-green-600 text-white px-5 py-1 rounded w-full"
+              >
+                Login
+              </button>
+
+              <Link to="/register" onClick={() => setOpen(false)}>
+                <button className="bg-gray-800 text-white px-5 py-1 rounded w-full">
+                  Register
+                </button>
+              </Link>
+            </>
+          )}
         </ul>
       )}
 
