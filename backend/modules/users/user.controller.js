@@ -1,4 +1,5 @@
 const userService = require("./user.service");
+const COOKIE_OPTIONS = require("../../config/cookieOptions");
 
 exports.register = async (req, res) => {
   try {
@@ -38,7 +39,15 @@ exports.login = async (req, res) => {
       user: result.user
     });
   } catch (err) {
-    res.status(err.status || 500).json({ message: err.message });
+    res.status(err.status || 500).json({
+      message: err.message || "Server error"
+    });
   }
+};
+
+exports.logout = (req, res) => {
+  res.clearCookie("token", COOKIE_OPTIONS);
+
+  res.status(200).json({ message: "Logged out successfully" });
 };
 
