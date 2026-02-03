@@ -35,14 +35,17 @@ app.use(cookieParser());
 const userRoutes = require("./modules/users/user.routes");
 app.use("/users", userRoutes);
 
-const authRoutes = require("./modules/auth/auth.routes.js");
-app.use("/auth", authRoutes);
+const ownerRoute = require("./modules/owners/owner.routes");
+app.use("/owners", ownerRoute);
 
 const vehicleRoutes = require("./modules/vehicles/vehicle.routes");
 app.use("/vehicles", vehicleRoutes);
 
 const bookingRoutes = require("./modules/bookings/booking.routes");
 app.use("/bookings", bookingRoutes);
+
+const commonRoute = require("./modules/common/common.routes");
+app.use("/common", commonRoute);
 
 const uploadRoutes = require("./routes/upload.routes");
 app.use("/upload", uploadRoutes);

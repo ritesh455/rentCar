@@ -1,7 +1,7 @@
 const db = require("../../config/firebase");
 const { generateOtp, hashOtp, compareOtp } = require("../../utils/otp.util");
 const { hashPassword, comparePassword } = require("../../utils/password.util");
-const validator = require("./auth.validation");
+const validator = require("./owner.validation");
 const { generateToken } = require("../../utils/jwt.util");
 const { encrypt } = require("../../utils/crypto.util");
 

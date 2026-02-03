@@ -1,4 +1,6 @@
 const authService = require("./auth.service");
+const COOKIE_OPTIONS = require("../../config/cookieOptions");
+const jwtUtil = require("../../utils/jwt.util");
 
 exports.register = async (req, res) => {
   try {
@@ -29,7 +31,7 @@ exports.verifyOtp = async (req, res) => {
 
 exports.login = async (req, res) => {
   try {
-    const result = await userService.login(req.body);
+    const result = await authService.login(req.body);
 
     res.cookie("token", result.token, COOKIE_OPTIONS);
 
@@ -38,7 +40,7 @@ exports.login = async (req, res) => {
       user: result.user
     });
   } catch (err) {
-    res.status(err.status || 500).json({ message: err.message });
+    res.status(err.status || 500).json({  message: err.message || "Server error" });
   }
 };
 
