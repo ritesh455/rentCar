@@ -6,5 +6,6 @@ router.post("/register", controller.register);
 router.post("/verify-otp", controller.verifyOtp);
 router.post("/login", controller.login);
 router.post("/logout", controller.logout);
+router.get("/me", controller.me);
 
 module.exports = router;

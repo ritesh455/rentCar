@@ -1,5 +1,6 @@
 const userService = require("./user.service");
 const COOKIE_OPTIONS = require("../../config/cookieOptions");
+const jwtUtil = require("../../utils/jwt.util");
 
 exports.register = async (req, res) => {
   try {
@@ -42,3 +43,29 @@ exports.logout = (req, res) => {
   res.status(200).json({ message: "Logged out successfully" });
 };
 
+exports.me = (req, res) => {
+  try {
+    const token = req.cookies?.token;
+
+    if (!token) {
+      return res.status(200).json({
+        authenticated: false
+      });
+    }
+
+    const decoded = jwtUtil.verifyToken(token);
+
+    return res.status(200).json({
+      authenticated: true,
+      user: {
+        userId: decoded.userId,
+        email: decoded.email,
+        role: decoded.role
+      }
+    });
+  } catch (err) {
+    return res.status(200).json({
+      authenticated: false
+    });
+  }
+};
