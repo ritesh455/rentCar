@@ -1,9 +1,9 @@
 import { FaFacebookF, FaInstagram, FaTwitter, FaGithub, FaYoutube } from "react-icons/fa"
 
-function Footer() {
+function Footer({ contactRef }) {
     return (
         <>
-            <div>
+            <div ref={contactRef}>
                 <div className="flex items-center justify-between max-w-6xl mx-auto p-5 sm:flex-row flex-col">
 
 

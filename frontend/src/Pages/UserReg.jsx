@@ -1,13 +1,15 @@
-import { useState } from "react";
+import { useState, useContext } from "react";
 import { useNavigate } from "react-router-dom";
+import { DataContext } from "../context/DataContext";
 
 export default function UserReg() {
   const navigate = useNavigate();
+  const { register } = useContext(DataContext);
 
   const [formData, setFormData] = useState({
     name: "",
     email: "",
-    mobile: "",
+    phone: "",
     dob: "",
     password: "",
     confirmPassword: "",
@@ -20,27 +22,37 @@ export default function UserReg() {
     });
   };
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
+ const handleSubmit = async (e) => {
+  e.preventDefault();
 
-    // 🔹 Basic validation
-    if (formData.password !== formData.confirmPassword) {
-      alert("Passwords do not match");
-      return;
-    }
+  if (formData.password !== formData.confirmPassword) {
+    alert("Passwords do not match");
+    return;
+  }
 
-    // 🔹 Store user in localStorage
-    localStorage.setItem("user", JSON.stringify(formData));
-
-    // 🔹 Redirect to Home page
-    navigate("/login");
+  // 🔹 Create payload exactly as backend expects
+  const payload = {
+    name: formData.name,
+    email: formData.email,
+    phone: formData.mobile,   // mapping mobile → phone
+    dob: formData.dob,
+    password: formData.password,
   };
+
+  try {
+    await register(payload);
+    alert("Registration successful");
+    navigate("/login");
+  } catch (error) {
+    alert(error.message || "Registration failed");
+  }
+};
+
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-green-100 to-blue-100 p-4">
       <div className="w-full max-w-md bg-white rounded-xl shadow-lg p-6">
 
-        {/* Header */}
         <h2 className="text-2xl font-bold text-center mb-2">
           Create Account
         </h2>
@@ -48,7 +60,6 @@ export default function UserReg() {
           Register to rent cars & bikes easily
         </p>
 
-        {/* Form */}
         <form onSubmit={handleSubmit} className="flex flex-col gap-4">
 
           <input
@@ -79,7 +90,7 @@ export default function UserReg() {
             onChange={handleChange}
           />
 
-          {/* DOB */}
+          <label>Select Date of Birth :-</label>
           <input
             type="date"
             name="dob"
@@ -114,7 +125,6 @@ export default function UserReg() {
           </button>
         </form>
 
-        {/* Footer */}
         <p className="text-center text-sm mt-4">
           Already have an account?{" "}
           <span

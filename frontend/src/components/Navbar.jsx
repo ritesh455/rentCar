@@ -2,13 +2,18 @@ import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import UserLogin from "../Pages/UserLogin";
 
-const navItems = [
+// navItems now accepts contactRef
+const navItems = (contactRef) => [
   { name: "Home", path: "/" },
   { name: "About", path: "/about" },
-  { name: "Contact", path: "/contact" },
+  {
+    name: "Contact",
+    onClick: () =>
+      contactRef.current.scrollIntoView({ behavior: "smooth" }),
+  },
 ];
 
-const Navbar = () => {
+const Navbar = ({ contactRef }) => {
   const [open, setOpen] = useState(false);
   const [showLogin, setShowLogin] = useState(false);
   const navigate = useNavigate();
@@ -21,6 +26,8 @@ const Navbar = () => {
     navigate("/");
   };
 
+  const items = navItems(contactRef);
+
   return (
     <nav className="bg-white shadow-md">
       <div className="flex justify-between items-center px-4 h-14">
@@ -28,23 +35,29 @@ const Navbar = () => {
 
         {/* Desktop Menu */}
         <ul className="hidden md:flex gap-10 mr-10 items-center">
-          {navItems.map(item => (
+          {items.map((item) => (
             <li key={item.name}>
-              <Link
-                to={item.path}
-                className="cursor-pointer hover:text-blue-500"
-              >
-                {item.name}
-              </Link>
+              {item.path ? (
+                <Link
+                  to={item.path}
+                  className="cursor-pointer hover:text-blue-500"
+                >
+                  {item.name}
+                </Link>
+              ) : (
+                <button
+                  onClick={item.onClick}
+                  className="cursor-pointer hover:text-blue-500"
+                >
+                  {item.name}
+                </button>
+              )}
             </li>
           ))}
 
           {user ? (
             <>
-              <Link
-                to="/profile"
-                className="hover:text-blue-500 font-medium"
-              >
+              <Link to="/profile" className="hover:text-blue-500 font-medium">
                 Profile
               </Link>
 
@@ -57,12 +70,13 @@ const Navbar = () => {
             </>
           ) : (
             <>
+              <Link to="/login">
               <button
-                onClick={() => setShowLogin(true)}
                 className="bg-green-600 text-white px-5 py-1 rounded"
               >
                 Login
               </button>
+              </Link>
 
               <Link to="/register">
                 <button className="bg-gray-800 text-white px-5 py-1 rounded">
@@ -85,15 +99,27 @@ const Navbar = () => {
       {/* Mobile Menu */}
       {open && (
         <ul className="md:hidden bg-gray-100 p-4 space-y-3">
-          {navItems.map(item => (
+          {items.map((item) => (
             <li key={item.name}>
-              <Link
-                to={item.path}
-                onClick={() => setOpen(false)}
-                className="block p-2 rounded hover:bg-gray-200"
-              >
-                {item.name}
-              </Link>
+              {item.path ? (
+                <Link
+                  to={item.path}
+                  onClick={() => setOpen(false)}
+                  className="block p-2 rounded hover:bg-gray-200"
+                >
+                  {item.name}
+                </Link>
+              ) : (
+                <button
+                  onClick={() => {
+                    item.onClick();
+                    setOpen(false);
+                  }}
+                  className="block w-full text-left p-2 rounded hover:bg-gray-200"
+                >
+                  {item.name}
+                </button>
+              )}
             </li>
           ))}
 
@@ -119,17 +145,18 @@ const Navbar = () => {
             </>
           ) : (
             <>
+              <Link to="/login">
               <button
-                onClick={() => {
-                  setShowLogin(true);
-                  setOpen(false);
-                }}
                 className="bg-green-600 text-white px-5 py-1 rounded w-full"
               >
                 Login
               </button>
+              </Link>
 
-              <Link to="/register" onClick={() => setOpen(false)}>
+              <Link
+                to="/register"
+                onClick={() => setOpen(false)}
+              >
                 <button className="bg-gray-800 text-white px-5 py-1 rounded w-full">
                   Register
                 </button>
