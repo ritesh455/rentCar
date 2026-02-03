@@ -2,6 +2,9 @@ import { Routes, Route } from "react-router-dom";
 import Home from "./Pages/Home";
 import Login from "./Pages/UserLogin";
 import Register from "./Pages/UserReg";
+import Vehicles from "./Pages/Vehicles";
+import VehicleDetails from "./Pages/VehicleDetails";
+import RentalSummary from "./Pages/RentalSummary";
 function App() {
 
 
@@ -11,6 +14,9 @@ function App() {
       <Route path="/" element={<Home />} />
       <Route path="/login" element={<Login />} />
       <Route path="/register" element={<Register />} />
+       <Route path="/vehicles" element={<Vehicles />} />
+       <Route path="/vehicle/:id" element={<VehicleDetails />} />
+      <Route path="/summary" element={<RentalSummary />} />
     </Routes>
     </>
   )

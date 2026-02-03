@@ -2,7 +2,11 @@ import { useState } from "react";
 import { Link } from "react-router-dom";
 import UserLogin from "../Pages/UserLogin";
 
-const navItems = ["Home", "About", "Contact"];
+const navItems = [
+  { name: "Home", path: "/" },
+  { name: "About", path: "/about" },
+  { name: "Contact", path: "/contact" },
+];
 
 const Navbar = () => {
   const [open, setOpen] = useState(false);
@@ -16,11 +20,13 @@ const Navbar = () => {
         {/* Desktop Menu */}
         <ul className="hidden md:flex gap-10 mr-10 items-center">
           {navItems.map(item => (
-            <li
-              key={item}
-              className="cursor-pointer hover:text-blue-500"
-            >
-              {item}
+            <li key={item.name}>
+              <Link
+                to={item.path}
+                className="cursor-pointer hover:text-blue-500"
+              >
+                {item.name}
+              </Link>
             </li>
           ))}
 
@@ -38,9 +44,9 @@ const Navbar = () => {
           </Link>
         </ul>
 
-        {/* Mobile Button */}
+        {/* Mobile Menu Button */}
         <button
-          className="md:hidden"
+          className="md:hidden text-2xl"
           onClick={() => setOpen(!open)}
         >
           ☰
@@ -51,11 +57,14 @@ const Navbar = () => {
       {open && (
         <ul className="md:hidden bg-gray-100 p-4 space-y-3">
           {navItems.map(item => (
-            <li
-              key={item}
-              className="p-2 rounded hover:bg-gray-200"
-            >
-              {item}
+            <li key={item.name}>
+              <Link
+                to={item.path}
+                onClick={() => setOpen(false)}
+                className="block p-2 rounded hover:bg-gray-200"
+              >
+                {item.name}
+              </Link>
             </li>
           ))}
 
@@ -69,7 +78,7 @@ const Navbar = () => {
             Login
           </button>
 
-          <Link to="/register">
+          <Link to="/register" onClick={() => setOpen(false)}>
             <button className="bg-gray-800 text-white px-5 py-1 rounded w-full">
               Register
             </button>

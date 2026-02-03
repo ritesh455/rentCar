@@ -1,5 +1,9 @@
+import { Link } from "react-router-dom";
+import Navbar from "./navbar";
+
 function HomePages() {
     return (
+
         <div>
             {/* Home Page top content background image*/}
             <div className="relative h-[70vh] w-full">
@@ -20,9 +24,11 @@ function HomePages() {
                     </h1>
 
                     <div className="mt-6 flex gap-4">
+                        <Link to="/vehicles" className="text-blue-600">
                         <button className="px-6 py-3 rounded-xl bg-zinc-700 hover:bg-zinc-800 text-white transition">
                             Reserve Your Car
                         </button>
+                        </Link>
 
                         <button className="px-6 py-3 rounded-xl border border-white text-white hover:bg-white hover:text-black transition">
                             About Us

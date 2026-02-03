@@ -4,7 +4,9 @@ import CarCard from "../components/CarCard"
 import HomePages from "../components/HomePages"
 import StepToBook from "../components/StepsToBook"
 import ReportPage from "./ReportPage"
-import Booking from "../components/Booking"
+import VehicleDetails from "./VehicleDetails"
+import RentalSummary from "./RentalSummary"
+import Vehicles from "./Vehicles"
 import '../index.css'
 
 function Home(){
@@ -36,8 +38,10 @@ function Home(){
 
       </div>
 
-{/* <Booking/> */}
 
+{/* <VehicleDetails/> */}
+{/* <RentalSummary/> */}
+{/* <Vehicles/> */}
 
 <div className="bottom-0 left-0 w-full bg-[#101828] shadow z-10">
   <Footer/>
