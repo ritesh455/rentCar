@@ -23,6 +23,10 @@ app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
 });
 
+const cookieParser = require("cookie-parser");
+app.use(cookieParser());
+
+
 const userRoutes = require("./modules/users/user.routes");
 app.use("/users", userRoutes);
 

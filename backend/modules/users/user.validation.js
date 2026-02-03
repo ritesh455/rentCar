@@ -1,6 +1,6 @@
-exports.validateRegister = ({ name, email, password }) => {
-  if (!name || !email || !password) {
-    throw { status: 400, message: "Name, email and password are required" };
+exports.validateRegister = ({ name, email, password ,phone}) => {
+  if (!name || !email || !password || !phone || !password) {
+    throw { status: 400, message: "Name, email, phone no. and password are required" };
   }
 };
 
