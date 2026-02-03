@@ -10,7 +10,7 @@ const OTP_EXPIRY_MIN = 5;
 exports.register = async (data) => {
   validator.validateRegister(data);
 
-  const { name, email, phone, password } = data;
+  const { name, email, phone, dob, password } = data;
 
   // check existing user
   const snap = await db
@@ -39,7 +39,8 @@ exports.register = async (data) => {
     tempUserData: {
       name,
       email,
-      phone: phone || null,
+      dob,
+      phone,
       passwordHash
     },
     createdAt: new Date()
