@@ -5,15 +5,6 @@ const controller = require("./user.controller");
 router.post("/register", controller.register);
 router.post("/verify-otp", controller.verifyOtp);
 router.post("/login", controller.login);
-router.post("/logout", (req, res) => {
-  res.clearCookie("token", {
-    httpOnly: true,
-    secure: false,
-    sameSite: "lax"
-  });
-
-  res.status(200).json({ message: "Logged out successfully" });
-});
-
+router.post("/logout", controller.logout);
 
 module.exports = router;
