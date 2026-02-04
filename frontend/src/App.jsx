@@ -7,6 +7,9 @@ import VehicleDetails from "./Pages/VehicleDetails";
 import RentalSummary from "./Pages/RentalSummary";
 import Profile from "./Pages/Profile";
 import Otp from "./Pages/otp";
+import OwnerVehicles from "./Pages/Owener/OwenerVehicles";
+import VehicleForm from "./Pages/Owener/VehicleForm";
+import { RequireAuth, RequireRole } from "./components/RoleRoute";
 function App() {
 
 
@@ -21,6 +24,41 @@ function App() {
       <Route path="/summary" element={<RentalSummary />} />
       <Route path="/profile" element={<Profile />} />
        <Route path="/otp" element={<Otp />} />
+       
+       
+      <Route
+        path="/owner/vehicles"
+        element={
+          <RequireAuth>
+            <RequireRole allowed={["owner"]}>
+              <OwnerVehicles />
+            </RequireRole>
+          </RequireAuth>
+        }
+      />
+
+      <Route
+        path="/owner/add-vehicle"
+        element={
+          <RequireAuth>
+            <RequireRole allowed={["owner"]}>
+              <VehicleForm />
+            </RequireRole>
+          </RequireAuth>
+        }
+      />
+
+      <Route
+        path="/owner/edit-vehicle/:id"
+        element={
+          <RequireAuth>
+            <RequireRole allowed={["owner"]}>
+              <VehicleForm />
+            </RequireRole>
+          </RequireAuth>
+        }
+      />
+
     </Routes>
     </>
   )

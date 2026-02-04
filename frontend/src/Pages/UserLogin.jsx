@@ -2,10 +2,12 @@ import { useState, useContext } from "react";
 import { useNavigate } from "react-router-dom";
 import { DataContext } from "../context/DataContext";
 
-export default function Login() {
+export default function UserLogin() {
   const navigate = useNavigate();
-  const { login } = useContext(DataContext);
-  
+  const { login, role: ctxRole } = useContext(DataContext);
+
+  // 🔹 role selection: user | owner
+  const [role, setRole] = useState("user");
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -16,11 +18,19 @@ export default function Login() {
     setLoading(true);
 
     try {
-      // ✅ Cookie is set by backend
-      await login({ email, password });
+      // ✅ Role-based login (API decided in DataContext)
+      const result = await login({ role, email, password });
 
       alert("Login successful");
-      navigate("/"); // redirect to home
+
+      // 🔁 Redirect based on authoritative role returned by DataContext.login
+      const actualRole = result?.role || ctxRole || role;
+      if (actualRole === "owner") {
+        navigate("/owner/vehicles");
+      } else {
+        navigate("/vehicles");
+      }
+
     } catch (error) {
       alert(error?.response?.data?.message || "Invalid email or password");
     } finally {
@@ -32,12 +42,39 @@ export default function Login() {
     <div className="min-h-screen flex items-center justify-center bg-gray-100 p-4">
       <div className="w-full max-w-md bg-white rounded-xl shadow-lg p-6">
 
+        {/* 🔹 ROLE TOGGLE */}
+        <div className="flex bg-gray-200 rounded-full mb-6">
+          <button
+            type="button"
+            onClick={() => setRole("user")}
+            className={`flex-1 py-2 rounded-full text-sm font-medium transition
+              ${role === "user"
+                ? "bg-green-600 text-white"
+                : "text-gray-600"
+              }`}
+          >
+            User
+          </button>
+
+          <button
+            type="button"
+            onClick={() => setRole("owner")}
+            className={`flex-1 py-2 rounded-full text-sm font-medium transition
+              ${role === "owner"
+                ? "bg-green-600 text-white"
+                : "text-gray-600"
+              }`}
+          >
+            Owner
+          </button>
+        </div>
+
         <h2 className="text-2xl font-bold text-center mb-2">
-          Login
+          {role === "owner" ? "Owner Login" : "User Login"}
         </h2>
 
         <p className="text-center text-sm text-gray-500 mb-6">
-          Welcome back! Please login to continue
+          Please login to continue
         </p>
 
         <form onSubmit={handleLogin} className="flex flex-col gap-4">
@@ -69,16 +106,18 @@ export default function Login() {
           </button>
         </form>
 
-        <p className="text-center text-sm mt-4">
-          Don’t have an account?{" "}
-          <span
-            className="text-green-600 cursor-pointer font-medium"
-            onClick={() => navigate("/register")}
-          >
-            Register
-          </span>
-        </p>
-
+        {/* Optional register link only for users */}
+        {role === "user" && (
+          <p className="text-center text-sm mt-4">
+            Don’t have an account?{" "}
+            <span
+              className="text-green-600 cursor-pointer font-medium"
+              onClick={() => navigate("/register")}
+            >
+              Register
+            </span>
+          </p>
+        )}
       </div>
     </div>
   );

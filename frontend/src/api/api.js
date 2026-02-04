@@ -26,20 +26,23 @@ export const verifyOtp = async (otpData) => {
   }
 };
 
-// 🔹 Login API
-export const loginUser = async (data) => {
-  try {
-    const res = await api.post("/users/login", data);
-    return res.data;
-  } catch (error) {
-    throw error.response?.data?.message || "Login failed";
-  }
+// 👤 Normal User Login
+export const userLogin = async (data) => {
+  const res = await api.post("/users/login", data);
+  return res.data;
 };
+
+// 👑 Owner Login
+export const ownerLogin = async (data) => {
+  const res = await api.post("/owners/login", data);
+  return res.data;
+};
+
 
 // 🔹 Logout API
 export const logoutUser = async () => {
   try {
-    const res = await api.post("/users/logout");
+    const res = await api.post("/common/logout");
     return res.data;
   } catch (error) {
     throw error.response?.data?.message || "Logout failed";
@@ -49,7 +52,7 @@ export const logoutUser = async () => {
 // 🔹 Check session / current user
 export const checkSession = async () => {
   try {
-    const res = await api.get("/users/me");
+    const res = await api.get("/common/me");
     return res.data;
   } catch (error) {
     throw error.response?.data?.message || "Session expired";

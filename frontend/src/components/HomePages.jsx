@@ -1,18 +1,33 @@
 import { useNavigate } from "react-router-dom";
+import { useContext } from "react";
+import { DataContext } from "../context/DataContext";
 
 function HomePages() {
- const navigate = useNavigate();
+  const navigate = useNavigate();
 
-  // ✅ Correct login status check
-  const isLoggedIn = localStorage.getItem("isLoggedIn") === "true";
-  // OR: const isLoggedIn = !!localStorage.getItem("token");
+  // ✅ AUTH + ROLE FROM CONTEXT
+  const { isAuthenticated, role } = useContext(DataContext);
 
-  const handleReserveCar = () => {
-    if (isLoggedIn) {
-      navigate("/vehicles");   // ✅ access car details
-    } else {
-      navigate("/login");      // ❌ force login
+  // ✅ ROLE BASED ACTION
+  const handlePrimaryAction = () => {
+    if (!isAuthenticated) {
+      navigate("/login");
+      return;
     }
+
+    if (role === "owner") {
+      navigate("/owner/vehicles");
+    } else {
+      navigate("/vehicles");
+    }
+  };
+
+  // ✅ ROLE BASED BUTTON TEXT
+  const getButtonText = () => {
+    if (isAuthenticated && role === "owner") {
+      return "Upload Your Rental Vehicle";
+    }
+    return "Reserve Your Car";
   };
 
   return (
@@ -33,11 +48,12 @@ function HomePages() {
           </h1>
 
           <div className="mt-6 flex gap-4">
+            {/* 🔹 ONLY THIS BUTTON LOGIC CHANGED */}
             <button
-              onClick={handleReserveCar}
+              onClick={handlePrimaryAction}
               className="px-6 py-3 rounded-xl bg-zinc-700 hover:bg-zinc-800 text-white transition"
             >
-              Reserve Your Car
+              {getButtonText()}
             </button>
 
             <button className="px-6 py-3 rounded-xl border border-white text-white hover:bg-white hover:text-black transition">
@@ -101,11 +117,12 @@ function HomePages() {
               rental services.
             </h1>
 
+            {/* 🔹 SAME ROLE BASED ACTION */}
             <button
-              onClick={handleReserveCar}
+              onClick={handlePrimaryAction}
               className="inline-flex items-center px-6 py-3 bg-green-700 text-white font-medium rounded-full hover:bg-green-800 transition"
             >
-              See Our Fleet
+              {getButtonText()}
             </button>
           </div>
 
@@ -134,106 +151,72 @@ function HomePages() {
               We take pride in our fleet and customer experience.
             </p>
 
-            <ul className="space-y-4">
-              <li className="flex gap-3">
-                <span className="w-6 h-6 rounded-full bg-green-700 text-white flex items-center justify-center">
-                  ✓
-                </span>
-                <div>
-                  <h4 className="font-semibold text-gray-900">
-                    Easy Booking Process
-                  </h4>
-                  <p className="text-sm text-gray-600">
-                    Optimized booking for a fast and secure experience.
-                  </p>
-                </div>
-              </li>
-
-              <li className="flex gap-3">
-                <span className="w-6 h-6 rounded-full bg-green-700 text-white flex items-center justify-center">
-                  ✓
-                </span>
-                <div>
-                  <h4 className="font-semibold text-gray-900">
-                    Convenient Pick-Up & Return
-                  </h4>
-                  <p className="text-sm text-gray-600">
-                    Flexible locations designed for your comfort.
-                  </p>
-                </div>
-              </li>
-            </ul>
-
+            {/* 🔹 SAME ROLE BASED ACTION */}
             <button
-              onClick={handleReserveCar}
+              onClick={handlePrimaryAction}
               className="inline-flex items-center px-6 py-3 bg-green-700 text-white font-medium rounded-full hover:bg-green-800 transition"
             >
-              Book Car Now
+              {getButtonText()}
             </button>
           </div>
         </div>
       </section>
 
-<section className="flex flex-col lg:flex-row items-stretch w-full">
-      
-      {/* Left Text Section */}
-      <div className="bg-black text-white p-10 lg:w-1/2 flex flex-col justify-center gap-6">
-        <h2 className="text-3xl font-bold">
-          Rent your car in 3 easy steps
-        </h2>
+      <section className="flex flex-col lg:flex-row items-stretch w-full">
+        {/* Left Text Section */}
+        <div className="bg-black text-white p-10 lg:w-1/2 flex flex-col justify-center gap-6">
+          <h2 className="text-3xl font-bold">
+            Rent your car in 3 easy steps
+          </h2>
 
-        <div className="space-y-4">
-          <div className="flex gap-4">
-            <span className="w-8 h-8 flex items-center justify-center rounded-full bg-lime-400 text-black font-semibold">
-              01
-            </span>
-            <div>
-              <h4 className="font-semibold">Choose Your Car</h4>
-              <p className="text-sm text-gray-300">
-                Find the perfect car that fits your journey.
-              </p>
+          <div className="space-y-4">
+            <div className="flex gap-4">
+              <span className="w-8 h-8 flex items-center justify-center rounded-full bg-lime-400 text-black font-semibold">
+                01
+              </span>
+              <div>
+                <h4 className="font-semibold">Choose Your Car</h4>
+                <p className="text-sm text-gray-300">
+                  Find the perfect car that fits your journey.
+                </p>
+              </div>
             </div>
-          </div>
 
-          <div className="flex gap-4">
-            <span className="w-8 h-8 flex items-center justify-center rounded-full bg-lime-400 text-black font-semibold">
-              02
-            </span>
-            <div>
-              <h4 className="font-semibold">Book Online</h4>
-              <p className="text-sm text-gray-300">
-                Select date and location in seconds.
-              </p>
+            <div className="flex gap-4">
+              <span className="w-8 h-8 flex items-center justify-center rounded-full bg-lime-400 text-black font-semibold">
+                02
+              </span>
+              <div>
+                <h4 className="font-semibold">Book Online</h4>
+                <p className="text-sm text-gray-300">
+                  Select date and location in seconds.
+                </p>
+              </div>
             </div>
-          </div>
 
-          <div className="flex gap-4">
-            <span className="w-8 h-8 flex items-center justify-center rounded-full bg-lime-400 text-black font-semibold">
-              03
-            </span>
-            <div>
-              <h4 className="font-semibold">Pick Up & Drive</h4>
-              <p className="text-sm text-gray-300">
-                Grab the keys and enjoy your ride.
-              </p>
+            <div className="flex gap-4">
+              <span className="w-8 h-8 flex items-center justify-center rounded-full bg-lime-400 text-black font-semibold">
+                03
+              </span>
+              <div>
+                <h4 className="font-semibold">Pick Up & Drive</h4>
+                <p className="text-sm text-gray-300">
+                  Grab the keys and enjoy your ride.
+                </p>
+              </div>
             </div>
           </div>
         </div>
-      </div>
 
-      {/* Right Image */}
-      <div className="lg:w-1/2">
-        <img
-          src="/images/img11.jpg"
-          alt="Car"
-          className="w-full h-full object-cover"
-        />
-      </div>
-
-    </section>
-
-
-
+        {/* Right Image */}
+        <div className="lg:w-1/2">
+          <img
+            src="/images/img11.jpg"
+            alt="Car"
+            className="w-full h-full object-cover"
+          />
+        </div>
+      </section>
     </div>
   );
 }
