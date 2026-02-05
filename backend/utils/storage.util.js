@@ -11,7 +11,7 @@ const BASE_DIR = path.join(__dirname, '../local_Storage');
 const TEMP_DIR = path.join(BASE_DIR, 'temp');
 
 
-if (!envPath) {
+if (!S_S_D) {
     console.error(">>> [CRITICAL ERROR] SECURE_STORAGE_PATH is not defined in .env!");
     // You can set a default here just to prevent the crash
     // const S_S_D = path.join(__dirname, '../../SecureStorage'); 
