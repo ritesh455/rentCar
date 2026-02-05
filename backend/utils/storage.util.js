@@ -4,9 +4,18 @@ const path = require('path');
 const os = require('os');
 const S_S_D = process.env.S_S_D;
 
+
+
 // Base directory in your OS home folder (e.g., C:/Users/Name/rental-storage)
 const BASE_DIR = path.join(__dirname, '../local_Storage');
 const TEMP_DIR = path.join(BASE_DIR, 'temp');
+
+
+if (!envPath) {
+    console.error(">>> [CRITICAL ERROR] SECURE_STORAGE_PATH is not defined in .env!");
+    // You can set a default here just to prevent the crash
+    // const S_S_D = path.join(__dirname, '../../SecureStorage'); 
+}
 
 // Initialization: Create folders if missing
 [BASE_DIR, TEMP_DIR].forEach(dir => {
