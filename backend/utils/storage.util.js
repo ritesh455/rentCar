@@ -2,7 +2,7 @@
 const fs = require('fs');
 const path = require('path');
 const os = require('os');
-const S_S_D = "C:/Users/ghode/Documents/My_Documents/github/tem3/SecureStorage";
+const S_S_D = process.env.S_S_D;
 
 // Base directory in your OS home folder (e.g., C:/Users/Name/rental-storage)
 const BASE_DIR = path.join(__dirname, '../local_Storage');
