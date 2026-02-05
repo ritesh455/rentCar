@@ -4,13 +4,13 @@ const { hashPassword, comparePassword } = require("../../utils/password.util");
 const validator = require("./owner.validation");
 const { generateToken } = require("../../utils/jwt.util");
 const { encrypt } = require("../../utils/crypto.util");
-
+const storageUtil = require("../../utils/storage.util"); 
 const OTP_EXPIRY_MIN = 5;
 
 // REGISTER → SEND OTP
 exports.register = async (data) => {
   validator.validateRegister(data);
-
+console.log(`>>> [SERVICE] Processing registration for: ${data.email}`);
   const { name,  email,  phone,  password,  dob,  address,  aadhaarStoragePath } = data;
 
   // check existing owner
@@ -88,9 +88,13 @@ exports.verifyOtp = async ({ email, otp }) => {
     await ref.update({ attemptsLeft: data.attemptsLeft - 1 });
     throw { status: 400, message: "Invalid OTP" };
   }
-
+  const tempPath = data.tempUserData.aadhaar.storagePath; // This is just the filename
+console.log("from"+tempPath);
+  const permanentPath = await storageUtil.promoteFile(tempPath, 'owners/aadhaar');
+    console.log(" to "+permanentPath);
   await db.collection("owners").add({
     ...data.tempUserData,
+    aadhaar: { storagePath: permanentPath, isVerified: false },
     isVerified: true,
     createdAt: new Date()
   });

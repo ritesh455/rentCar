@@ -1,30 +1,63 @@
 const crypto = require("crypto");
 
+// const ALGO = "aes-256-gcm";
+// const KEY = Buffer.from(process.env.DATA_ENCRYPTION_KEY, "hex"); // 32 bytes
+// const IV_LENGTH = 12;
+
+
+// exports.encryptBuffer = (buffer) => {
+//   const iv = crypto.randomBytes(IV_LENGTH);
+//   const cipher = crypto.createCipheriv(ALGO, KEY, iv);
+// console.log("Encryption Key Length (Bytes):", KEY.length); 
+// // This MUST output exactly 32. If it says 31, 33, or 0, that is your error.
+//   const encrypted = Buffer.concat([cipher.update(buffer), cipher.final()]);
+//   const authTag = cipher.getAuthTag();
+
+//   return Buffer.concat([iv, authTag, encrypted]);
+// };
+
+// exports.decryptBuffer = (buffer) => {
+//   const iv = buffer.slice(0, 12);
+//   const authTag = buffer.slice(12, 28);
+//   const encrypted = buffer.slice(28);
+
+//   const decipher = crypto.createDecipheriv(ALGO, KEY, iv);
+//   decipher.setAuthTag(authTag);
+
+//   return Buffer.concat([decipher.update(encrypted), decipher.final()]);
+// };
+
+
 const ALGO = "aes-256-gcm";
-const KEY = Buffer.from(process.env.DATA_ENCRYPTION_KEY, "hex"); // 32 bytes
-const IV_LENGTH = 12;
-
-
+const KEY = Buffer.from(process.env.DATA_ENCRYPTION_KEY, "utf8"); 
+const IV_LENGTH = 12; // Recommended for GCM
 exports.encryptBuffer = (buffer) => {
   const iv = crypto.randomBytes(IV_LENGTH);
   const cipher = crypto.createCipheriv(ALGO, KEY, iv);
+console.log("Encryption Key Length (Bytes):", KEY.length); 
 
   const encrypted = Buffer.concat([cipher.update(buffer), cipher.final()]);
   const authTag = cipher.getAuthTag();
 
+  // Structure: [IV (12)] + [AuthTag (16)] + [Encrypted Data]
   return Buffer.concat([iv, authTag, encrypted]);
 };
 
 exports.decryptBuffer = (buffer) => {
-  const iv = buffer.slice(0, 12);
-  const authTag = buffer.slice(12, 28);
-  const encrypted = buffer.slice(28);
+  try {
+    const iv = buffer.slice(0, 12);
+    const authTag = buffer.slice(12, 28);
+    const encrypted = buffer.slice(28);
 
-  const decipher = crypto.createDecipheriv(ALGO, KEY, iv);
-  decipher.setAuthTag(authTag);
+    const decipher = crypto.createDecipheriv(ALGO, KEY, iv);
+    decipher.setAuthTag(authTag);
 
-  return Buffer.concat([decipher.update(encrypted), decipher.final()]);
+    return Buffer.concat([decipher.update(encrypted), decipher.final()]);
+  } catch (err) {
+    throw new Error("Decryption failed: " + err.message);
+  }
 };
+
 
 exports.encrypt = (text) => {
   const iv = crypto.randomBytes(IV_LENGTH);

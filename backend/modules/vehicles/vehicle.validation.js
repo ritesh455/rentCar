@@ -1,8 +1,8 @@
 exports.validateCreateVehicle = (data) => {
-  const { type, brand, model, vehicleNumber, pricePerDay } = data;
+  const { type, brand, model, vehicleNumber, pricePerDay, rcStoragePath, nocStoragePath } = data;
 
-  if (!type || !brand || !model || !vehicleNumber || !pricePerDay) {
-    throw { status: 400, message: "All vehicle fields are required" };
+  if (!type || !brand || !model || !vehicleNumber || !pricePerDay || !rcStoragePath || !nocStoragePath) {
+    throw { status: 400, message: "All vehicle fields and documents are required" };
   }
 
   if (!["car", "bike"].includes(type)) {

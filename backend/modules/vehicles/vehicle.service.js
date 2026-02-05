@@ -4,7 +4,7 @@ const validator = require("./vehicle.validation");
 exports.addVehicle = async (data, owner) => {
   validator.validateCreateVehicle(data);
 
-  const { type, brand, model, vehicleNumber, pricePerDay } = data;
+  const { type, brand, model, vehicleNumber, pricePerDay, fuelType, seats, rcStoragePath, nocStoragePath } = data;
 
   // prevent duplicate vehicle number
   const existing = await db
@@ -22,11 +22,9 @@ exports.addVehicle = async (data, owner) => {
     brand,
     model,
     vehicleNumber,
-
+    pricePerDay,
     fuelType,
     seats,
-    pricePerDay,
-
     documents:{
       rc: {
       storagePath: rcStoragePath,
@@ -37,7 +35,6 @@ exports.addVehicle = async (data, owner) => {
       isVerified: false
     }
     },
-
     ownerId: owner.ownerId,
     ownerEmail: owner.email,
 

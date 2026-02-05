@@ -1,30 +1,73 @@
-const fs = require("fs");
-const path = require("path");
 
-/**
- * Save encrypted file to local storage (TEMP)
- * @param {string} relativePath - e.g. owners/aadhaar/123.enc
- * @param {Buffer} buffer - encrypted file buffer
- */
-exports.saveFile = (relativePath, buffer) => {
-  const baseDir = path.join(__dirname, "..", "storage");
-  const fullPath = path.join(baseDir, relativePath);
+const fs = require('fs');
+const path = require('path');
+const os = require('os');
+const S_S_D = "C:/Users/ghode/Documents/My_Documents/github/tem3/SecureStorage";
 
-  fs.mkdirSync(path.dirname(fullPath), { recursive: true });
-  fs.writeFileSync(fullPath, buffer);
+// Base directory in your OS home folder (e.g., C:/Users/Name/rental-storage)
+const BASE_DIR = path.join(__dirname, '../local_Storage');
+const TEMP_DIR = path.join(BASE_DIR, 'temp');
+
+// Initialization: Create folders if missing
+[BASE_DIR, TEMP_DIR].forEach(dir => {
+    if (!fs.existsSync(dir)) {
+        fs.mkdirSync(dir, { recursive: true });
+        console.log(`>>> [INIT] Created folder: ${dir}`);
+    }
+});
+
+exports.saveDirectly = async (filename, buffer, targetSubfolder) => {
+    try {
+        const targetDir = path.join(S_S_D, targetSubfolder);
+        const fullPath = path.join(targetDir, filename);
+
+        // Ensure the subfolder (e.g., vehicles/rc) exists
+        if (!fs.existsSync(targetDir)) {
+            fs.mkdirSync(targetDir, { recursive: true });
+        }
+
+        fs.writeFileSync(fullPath, buffer);
+        console.log(`>>> [DISK] Direct Save Success: ${targetSubfolder}/${filename}`);
+        
+        // Return the relative path for Firestore storage
+        return path.join(targetSubfolder, filename);
+    } catch (error) {
+        console.error(">>> [DISK ERROR] Direct save failed:", error.message);
+        throw error;
+    }
 };
 
-/**
- * Read encrypted file from local storage (ADMIN ONLY)
- * @param {string} relativePath
- */
-exports.readFile = (relativePath) => {
-  const baseDir = path.join(__dirname, "..", "storage");
-  const fullPath = path.join(baseDir, relativePath);
+exports.saveToGlobalTemp = async (filename, buffer) => {
+    const fullPath = path.join(TEMP_DIR, filename);
+    fs.writeFileSync(fullPath, buffer);
+    console.log(`>>> [DISK] Temp file saved: local_Storage/temp/${filename}`);
+    return filename; // Store only the filename in tempUserData
+};
+exports.promoteFile = async (filename, targetSubfolder) => {
+    try {
+        // Use TEMP_DIR because that's where saveToGlobalTemp puts them
+        const sourcePath = path.join(TEMP_DIR, filename); 
+        
+        // Final destination: E:/Donwload/SecureStorage/owner/aadhaar
+        const targetDir = path.join(S_S_D, targetSubfolder);
+        
+        // Final file path: E:/Donwload/SecureStorage/owner/aadhaar/filename.enc
+        const targetPath = path.join(targetDir, filename);
 
-  if (!fs.existsSync(fullPath)) {
-    throw new Error("File not found");
-  }
+        if (!fs.existsSync(targetDir)) {
+            fs.mkdirSync(targetDir, { recursive: true });
+        }
 
-  return fs.readFileSync(fullPath);
+        if (fs.existsSync(sourcePath)) {
+            fs.renameSync(sourcePath, targetPath);
+            console.log(`>>> [DISK] Moved from local_Storage/temp to ${targetPath}`);
+            return path.join(targetSubfolder, filename); 
+        } else {
+            console.error(">>> [DISK ERROR] Looked for file at:", sourcePath);
+            throw new Error("Source file not found in temp");
+        }
+    } catch (error) {
+        console.error(">>> [DISK ERROR] Promotion failed:", error.message);
+        throw error;
+    }
 };
