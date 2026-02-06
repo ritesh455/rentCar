@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import api from "../../api/api";
+import { assetUrl } from "../../api/api";
 import Navbar from "../../components/Navbar";
 
 export default function OwnerVehicles() {
@@ -8,8 +9,14 @@ export default function OwnerVehicles() {
   const [vehicles, setVehicles] = useState([]);
 
   useEffect(() => {
-    api.get("/owners/vehicles", { withCredentials: true })
-      .then((res) => setVehicles(res.data))
+    api.get("/vehicles/my")
+      .then((res) => {
+        // backend returns { vehicles: [...] }
+        const list = res.data?.vehicles || res.data || [];
+        // normalize id field to _id for existing UI usage
+        const normalized = list.map((v) => ({ _id: v.id || v._id, ...v }));
+        setVehicles(normalized);
+      })
       .catch(() => alert("Failed to load vehicles"));
   }, []);
 
@@ -42,20 +49,16 @@ export default function OwnerVehicles() {
         {vehicles.map((v) => (
           <div key={v._id} className="bg-white rounded shadow p-4">
             <img
-              src={v.images?.[0]}
-              alt={v.name}
-              className="h-40 w-full object-cover rounded"
+              src={assetUrl(v.images?.[0] || v.image || "")}
+              alt={`${v.brand} ${v.model}`}
+              className="h-44 w-full object-contain bg-gray-50"
             />
 
-            <h3 className="font-bold mt-2">{v.name}</h3>
-            <p className="text-sm text-gray-600">
-              {v.brand} • {v.fuelType}
-            </p>
+            <h3 className="font-bold mt-2">{v.brand} {v.model}</h3>
+            <p className="text-sm text-gray-600">{v.fuelType}</p>
 
             <p className="font-semibold mt-1">₹{v.pricePerDay} / day</p>
-            <p className="text-xs text-gray-500">
-              Location: {v.location}
-            </p>
+            <p className="text-xs text-gray-500">Location: {v.ownerloc || v.location || "-"}</p>
 
             <button
               onClick={() => navigate(`/owner/edit-vehicle/${v._id}`)}

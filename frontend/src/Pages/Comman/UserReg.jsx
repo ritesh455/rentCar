@@ -1,6 +1,6 @@
 import { useState, useContext } from "react";
 import { useNavigate } from "react-router-dom";
-import { DataContext } from "../context/DataContext";
+import { DataContext } from "../../context/DataContext";
 
 export default function UnifiedRegister() {
   const navigate = useNavigate();

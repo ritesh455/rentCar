@@ -3,7 +3,13 @@ import axios from "axios";
 // ✅ Create axios instance
 const api = axios.create({
   baseURL: "http://localhost:3000",
-  withCredentials: true, // ✅ enables cookies (JWT)
+  withCredentials: true, // ✅ enables cookies (JWT) for authenticated endpoints
+});
+
+// Public API instance (no cookies) — use this for public endpoints to avoid CORS credential issues
+export const publicApi = axios.create({
+  baseURL: "http://localhost:3000",
+  withCredentials: false,
 });
 
 
@@ -82,4 +88,68 @@ export const checkSession = async () => {
   }
 };
 
+
+export const addVehicleDetails = async (details) => {
+  try {
+    const res = await api.post("/vehicles", details);
+    return res.data; // Should return { id: "vehicle_id_here" }
+  } catch (error) {
+    throw error.response?.data?.message || "Failed to save details";
+  }
+};
+
+// 🔹 Get vehicles for the current owner
+export const getMyVehicles = async () => {
+  try {
+    const res = await api.get("/vehicles/my");
+    return res.data; // { vehicles: [...] }
+  } catch (error) {
+    throw error.response?.data?.message || "Failed to fetch vehicles";
+  }
+};
+
+// 🔹 Add Vehicle Images (Step 2)
+export const addVehicleImages = async (vehicleId, imageData) => {
+  try {
+    const res = await api.post(`/vehicles/${vehicleId}/images`, imageData);
+    return res.data;
+  } catch (error) {
+    throw error.response?.data?.message || "Failed to upload images";
+  }
+};
+
+// 🔹 Public vehicles (for normal users)
+export const getPublicVehicles = async () => {
+  try {
+    const res = await publicApi.get('/vehicles/public');
+    return res.data; // expect { vehicles: [...] } or array
+  } catch (error) {
+    // Provide full error in message for debugging
+    const msg = error?.response?.data || error?.message || 'Failed to fetch public vehicles';
+    throw msg;
+  }
+};
+
+export const getPublicVehicle = async (vehicleId) => {
+  try {
+    const res = await publicApi.get(`/vehicles/public/${vehicleId}`);
+    return res.data; // expect vehicle object
+  } catch (error) {
+    const msg = error?.response?.data || error?.message || 'Failed to fetch vehicle';
+    throw msg;
+  }
+};
+
 export default api;
+
+// Helper to build absolute URL for asset paths returned by backend
+export const assetUrl = (path) => {
+  if (!path) return "";
+  // If path already appears absolute, return as-is
+  if (path.startsWith("http://") || path.startsWith("https://")) return path;
+  // Ensure baseURL has no trailing slash
+  const base = api.defaults.baseURL.replace(/\/$/, "");
+  // Ensure path starts with '/'
+  const p = path.startsWith("/") ? path : `/${path}`;
+  return `${base}${p}`;
+};
