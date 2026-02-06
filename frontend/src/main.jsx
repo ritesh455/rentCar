@@ -4,9 +4,9 @@ import { BrowserRouter } from "react-router-dom";
 import { DataProvider } from "./context/DataContext";
 
 ReactDOM.createRoot(document.getElementById("root")).render(
-  <BrowserRouter>
-    <DataProvider>
+  <DataProvider>
+    <BrowserRouter>
       <App />
-    </DataProvider>
-  </BrowserRouter>
+    </BrowserRouter>
+  </DataProvider>
 );

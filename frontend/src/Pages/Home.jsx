@@ -3,9 +3,9 @@ import Navbar from "../components/Navbar"
 import CarCard from "../components/CarCard"
 import HomePages from "../components/HomePages"
 import ReportPage from "./ReportPage"
-import VehicleDetails from "./VehicleDetails"
+import VehicleDetails from "./Users/VehicleDetails"
 import RentalSummary from "./RentalSummary"
-import Vehicles from "./Vehicles"
+import Vehicles from "./Users/Vehicles"
 import '../index.css'
 import { useRef } from "react";
 
