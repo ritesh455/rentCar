@@ -104,11 +104,20 @@ exports.getPendingVehicles = async () => {
   const snap = await db.collection("vehicles").get();
 
   const vehicles = snap.docs
-    .map(doc => ({ id: doc.id, ...doc.data() }))
-    .filter(v =>
-      !v.isVerifiedByAdmin ||
-      !v.documents?.rc?.isVerified ||
-      !v.documents?.noc?.isVerified ||
+    .map(doc => {
+      const data = doc.data(); // Get the data once
+      
+      return { 
+        id: doc.id, 
+        ...data,
+        // Use the variable 'data' instead of calling doc.data again
+        images: data.isImagesUploaded ? buildImageUrls(doc.id, data.imageCount, 1) : [] 
+      };
+    })
+    .filter(v => 
+      !v.isVerifiedByAdmin || 
+      !v.documents?.rc?.isVerified || 
+      !v.documents?.noc?.isVerified || 
       !v.isImagesUploaded
     );
 
