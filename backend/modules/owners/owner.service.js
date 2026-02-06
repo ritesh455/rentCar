@@ -44,7 +44,7 @@ console.log(`>>> [SERVICE] Processing registration for: ${data.email}`);
       phone: phone ,
       passwordHash,
       dob: dob ,
-      addressEncrypted: encrypt(address),
+      address: address,
       aadhaar: {
         storagePath: aadhaarStoragePath,
         isVerified: false
@@ -131,6 +131,7 @@ exports.login = async ({ email, password }) => {
   const token = generateToken({
     ownerId: doc.id,
     email: owner.email,
+    address: owner.address,
     role: "OWNER"
   });
 

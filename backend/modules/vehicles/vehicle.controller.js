@@ -1,6 +1,11 @@
+const fs = require("fs");
+const path = require("path");
+const S_S_D = process.env.S_S_D;
+
 const vehicleService = require("./vehicle.service");
 const { encryptBuffer } = require("../../utils/crypto.util");
 const { saveDirectly } = require("../../utils/storage.util");
+const storage = require("../../utils/storage.util");
 
 exports.addVehicle = async (req, res) => {
   try {
@@ -47,6 +52,46 @@ exports.getPublicVehicles = async (req, res) => {
     res.status(200).json(result);
   } catch (err) {
     res.status(500).json({ message: "Server error" });
+  }
+};
+
+exports.serveImage = (req, res) => {
+  const { id, index } = req.params;
+
+  const filePath = path.join(
+    S_S_D,
+    "vehicles",
+    id,
+    "images",
+    `${index}.jpg`
+  );
+
+  if (!fs.existsSync(filePath)) {
+    return res.status(404).json({ message: "Image not found" });
+  }
+
+  res.sendFile(filePath);
+};
+
+exports.uploadVehicleImages = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const owner = req.user;
+    const files = req.files;
+
+    if (!files || files.length === 0) {
+      throw { status: 400, message: "No images uploaded" };
+    }
+
+    const result = await vehicleService.uploadVehicleImages(
+      id,
+      owner,
+      files
+    );
+
+    res.status(200).json(result);
+  } catch (err) {
+    res.status(err.status || 500).json({ message: err.message });
   }
 };
 

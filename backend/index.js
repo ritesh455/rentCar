@@ -1,8 +1,9 @@
 require("dotenv").config();
-
+const bootstrapAdmin = require("./utils/admin.bootstrap");
 const express = require("express");
 const { db } = require("./config/firebase");
 const cors=require("cors");
+const multerErrorHandler = require("./middleware/multerError.middleware");
 
 const app = express();
 app.use(express.json());
@@ -11,6 +12,10 @@ app.use(cors(({
   credentials: true
 })));
 app.use(express.urlencoded({ extended: true }));
+//for the automatically make an root admin
+(async () => {
+  await bootstrapAdmin();
+})();
 
 app.get("/health", async (req, res) => {
   try {
@@ -41,6 +46,9 @@ app.use("/owners", ownerRoute);
 const vehicleRoutes = require("./modules/vehicles/vehicle.routes");
 app.use("/vehicles", vehicleRoutes);
 
+const adminRoutes = require("./modules/admin/admin.routes");
+app.use("/admin", adminRoutes);
+
 const bookingRoutes = require("./modules/bookings/booking.routes");
 app.use("/bookings", bookingRoutes);
 
@@ -49,3 +57,4 @@ app.use("/common", commonRoute);
 
 const uploadRoutes = require("./routes/upload.routes");
 app.use("/upload", uploadRoutes);
+app.use(multerErrorHandler);
