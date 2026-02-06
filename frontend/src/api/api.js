@@ -6,6 +6,19 @@ const api = axios.create({
   withCredentials: true, // ✅ enables cookies (JWT)
 });
 
+
+// 👑 Owner Register API
+export const registerOwner = async (ownerData) => {
+  try {
+    // We don't manually set headers here; Axios handles FormData automatically
+    const res = await api.post("/owners/register", ownerData);
+    return res.data;
+  } catch (error) {
+    throw error.response?.data?.message || "Owner registration failed";
+  }
+};
+
+
 // 🔹 Register API
 export const registerUser = async (userData) => {
   try {
@@ -36,6 +49,16 @@ export const userLogin = async (data) => {
 export const ownerLogin = async (data) => {
   const res = await api.post("/owners/login", data);
   return res.data;
+};
+
+// 🔹 Owner OTP Verification API
+export const verifyOwnerOtp = async (otpData) => {
+  try {
+    const res = await api.post("/owners/verify-otp", otpData);
+    return res.data;
+  } catch (error) {
+    throw error.response?.data?.message || "Owner OTP verification failed";
+  }
 };
 
 

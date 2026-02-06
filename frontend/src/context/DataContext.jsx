@@ -1,6 +1,8 @@
 import { createContext, useEffect, useState } from "react";
 import {
   registerUser,
+  registerOwner,
+  verifyOwnerOtp,
   verifyOtp,
   userLogin,
   ownerLogin,
@@ -36,15 +38,28 @@ export const DataProvider = ({ children }) => {
       .finally(() => setLoading(false));
   }, []);
 
+
+  // 🔹 Register Owner
+  const registerOwnerAccount = async (formData) => {
+    return await registerOwner(formData);
+  };
+
+  
   // 🔹 Register user
   const register = async (formData) => {
     return await registerUser(formData);
   };
 
   // 🔹 Verify OTP
-  const verifyUserOtp = async (data) => {
-    return await verifyOtp(data);
-  };
+const verifyUserOtp = async (data) => {
+  // If we know the role, we call the specific API
+  if (data.role === "owner") {
+    return await verifyOwnerOtp({ email: data.email, otp: data.otp });
+  }
+  // Otherwise default to normal user
+  return await verifyOtp({ email: data.email, otp: data.otp });
+};
+  
 
   // 🔹 Role-based Login
   const login = async ({ role, email, password }) => {
@@ -86,6 +101,7 @@ export const DataProvider = ({ children }) => {
         verifyUserOtp,
         login,
         logout,
+        registerOwnerAccount,
         isAuthenticated,
         role,      // ✅ exposed role
         loading,
