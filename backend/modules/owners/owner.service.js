@@ -11,7 +11,7 @@ const OTP_EXPIRY_MIN = 5;
 exports.register = async (data) => {
   validator.validateRegister(data);
 console.log(`>>> [SERVICE] Processing registration for: ${data.email}`);
-  const { name,  email,  phone,  password,  dob,  address,  aadhaarStoragePath } = data;
+  const { name,  email,  phone,  password,  dob,  line1, city, state,  aadhaarStoragePath } = data;
 
   // check existing owner
   const emailQuery = db.collection("owners").where("email", "==", email).limit(1).get();
@@ -44,11 +44,17 @@ console.log(`>>> [SERVICE] Processing registration for: ${data.email}`);
       phone: phone ,
       passwordHash,
       dob: dob ,
-      address: address,
+      address: {
+        line1 : line1,
+        city: city,
+        state: state
+      },
       aadhaar: {
         storagePath: aadhaarStoragePath,
         isVerified: false
       },
+      
+
     },
     createdAt: new Date()
   });

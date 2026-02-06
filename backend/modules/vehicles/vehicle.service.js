@@ -45,24 +45,30 @@ exports.addVehicle = async (data, owner) => {
     imageCount: 0,
     isImagesUploaded: false,
     isImagesVerified: false,
-    isActive: true,
+    isActive: false,
     isVerifiedByAdmin: false,
     createdAt: new Date()
   });
 
   return { message: "Vehicle added successfully" };
-};
-
+};  
 exports.getMyVehicles = async (owner) => {
   const snap = await db
     .collection("vehicles")
     .where("ownerId", "==", owner.ownerId)
     .get();
 
-  const vehicles = snap.docs.map(doc => ({
-    id: doc.id,
-    ...doc.data()
-  }));
+  const vehicles = snap.docs.map(doc => {
+    const data = doc.data(); // ✅ FIX
+
+    return {
+      id: doc.id,
+      ...data,
+      images: data.isImagesUploaded
+        ? buildImageUrls(doc.id, data.imageCount, 1)
+        : []
+    };
+  });
 
   return { vehicles };
 };
@@ -90,7 +96,7 @@ exports.getPublicVehicles = async () => {
       pricePerDay: data.pricePerDay,
       seats:data.seats,
       ownerloc:data.ownerloc,
-      images: data.isImagesUploaded? buildImageUrls(doc.id, data.imageCount, 2): []
+      images: data.isImagesUploaded? buildImageUrls(doc.id, data.imageCount, 1): []
     };
   });
 
@@ -195,6 +201,7 @@ exports.updateVehicle = async (vehicleId, data, owner) => {
 
   await ref.update({
     ...data,
+    isActive:false,
     updatedAt: new Date()
   });
 

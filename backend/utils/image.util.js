@@ -3,7 +3,7 @@ exports.buildImageUrls = (vehicleId, count, limit = null) => {
   const urls = [];
 
   for (let i = 1; i <= total; i++) {
-    urls.push(`/api/vehicles/${vehicleId}/images/${i}`);
+    urls.push(`/vehicles/${vehicleId}/images/${i}`);
   }
 
   return urls;
