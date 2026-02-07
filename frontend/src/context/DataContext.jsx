@@ -10,6 +10,7 @@ import {
   checkSession,
   addVehicleDetails,
   addVehicleImages,
+  adminLogin,
   getMyVehicles,
 } from "../api/api";
 
@@ -23,26 +24,48 @@ export const DataProvider = ({ children }) => {
 
   
 
-  // ✅ Check cookie-based session on app load
-  useEffect(() => {
+// DataContext.jsx
+
+useEffect(() => {
+  const adminToken = localStorage.getItem("adminToken");
+
+  if (adminToken) {
+    // If token exists, assume authenticated as root to prevent refresh logout
+    setIsAuthenticated(true);
+    setRole("root");
+    setLoading(false);
+  } else {
+    // Only call common/me for non-admin users
     checkSession()
       .then((res) => {
-        // backend returns { authenticated: true, user: { ..., role } }
         setIsAuthenticated(true);
         const backendRole = res?.user?.role || res?.role || null;
-        if (backendRole) {
-          // normalize roles to lowercase 'user'|'owner'
-          setRole(String(backendRole).toLowerCase());
-        } else {
-          setRole(null);
-        }
+        setRole(backendRole ? String(backendRole).toLowerCase() : null);
       })
       .catch(() => {
         setIsAuthenticated(false);
         setRole(null);
       })
       .finally(() => setLoading(false));
-  }, []);
+  }
+}, []);
+
+// DataContext.jsx
+
+const logoutAdmin = () => {
+  // 1. Clear the persistent admin token
+  localStorage.removeItem("adminToken");
+
+  // 2. Reset React states
+  setIsAuthenticated(false);
+  setRole(null);
+
+  // 3. Clear any other session-related local data
+  localStorage.clear(); 
+
+  // 4. Redirect to login page
+  window.location.href = "/admin-login"; 
+};
 
 
   // 🔹 Register Owner
@@ -101,6 +124,7 @@ const verifyUserOtp = async (data) => {
   };
 
 
+
   // Register vehicle details (step 1) — expects FormData (with rc & noc files)
   const registerVehicle = async (details) => {
     const res = await addVehicleDetails(details);
@@ -139,6 +163,39 @@ const verifyUserOtp = async (data) => {
     return res;
   };
 
+
+
+
+// DataContext.jsx
+// DataContext.jsx
+const loginAdmin = async ({ role, email, password }) => {
+  setLoading(true);
+  try {
+    const res = await adminLogin({ email, password }); //
+
+    if (res && res.admin && res.token) {
+      // ✅ 1. Save the token for future authorized requests
+      localStorage.setItem("adminToken", res.token); 
+
+      setIsAuthenticated(true);
+      
+      // ✅ 2. Identify the role as "root" based on your JSON
+      const backendRole = String(res.admin.role).toLowerCase();
+      setRole(backendRole);
+      
+      setLoading(false);
+      return { authenticated: true, role: backendRole };
+    }
+  } catch (err) {
+    setIsAuthenticated(false);
+    setRole(null);
+    setLoading(false);
+    throw err;
+  }
+};
+
+
+
   return (
     <DataContext.Provider
       value={{
@@ -152,6 +209,8 @@ const verifyUserOtp = async (data) => {
         loading,
         registerVehicle,
         uploadImages,
+        loginAdmin,
+        logoutAdmin,
         currentVehicleId
       }}
     >

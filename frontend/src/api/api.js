@@ -153,3 +153,88 @@ export const assetUrl = (path) => {
   const p = path.startsWith("/") ? path : `/${path}`;
   return `${base}${p}`;
 };
+
+
+
+// Inside api.js
+export const adminLogin = async (data) => {
+  const res = await api.post("/admin/login", data);
+  return res.data;
+};
+
+// 👑 Fetch Pending Vehicles
+export const getPendingVehicles = async () => {
+  // Retrieve the token from localStorage
+  const token = localStorage.getItem("adminToken"); 
+  
+  // Make sure you are NOT passing 'adminData' here
+  const res = await api.get("/admin/vehicles/pending", {
+    headers: {
+      Authorization: `Bearer ${token}` // ✅ Use the token, not adminData
+    }
+  });
+  return res.data; 
+};
+
+
+// 👑 Create New Admin
+export const createAdminAccount = async (adminData) => {
+  // Retrieve the token stored during loginAdmin
+  const token = localStorage.getItem("adminToken"); 
+  
+  const res = await api.post("/admin/create", adminData, {
+    headers: {
+      Authorization: `Bearer ${token}` // ✅ Attach the token here
+    }
+  });
+  return res.data;
+};
+
+// 👑 Verify a Vehicle
+export const verifyVehicleApi = async (vehicleId) => {
+  const res = await api.patch(`/admin/vehicles/${vehicleId}/verify`);
+  return res.data;
+};
+
+
+
+// api.js
+
+// 🔹 Get specific vehicle details for admin review
+export const getAdminVehicleById = async (id) => {
+  const token = localStorage.getItem("adminToken");
+  const res = await api.get(`/admin/vehicles/${id}`, {
+    headers: { Authorization: `Bearer ${token}` }
+  });
+  return res.data; // Expecting owner and vehicle details
+};
+
+// 🔹 Verification APIs
+export const verifyRcApi = async (id) => {
+  const token = localStorage.getItem("adminToken");
+  return await api.patch(`/admin/vehicles/${id}/verify-rc`, {}, {
+    headers: { Authorization: `Bearer ${token}` }
+  });
+};
+
+export const verifyNocApi = async (id) => {
+  const token = localStorage.getItem("adminToken");
+  return await api.patch(`/admin/vehicles/${id}/verify-noc`, {}, {
+    headers: { Authorization: `Bearer ${token}` }
+  });
+};
+
+export const verifyImagesApi = async (id) => {
+  const token = localStorage.getItem("adminToken");
+  return await api.patch(`/admin/vehicles/${id}/verify-images`, {}, {
+    headers: { Authorization: `Bearer ${token}` }
+  });
+};
+
+// 🔹 Final Activation
+export const activateVehicleApi = async (id) => {
+  const token = localStorage.getItem("adminToken");
+  return await api.patch(`/admin/vehicles/${id}/activate`, {}, {
+    headers: { Authorization: `Bearer ${token}` }
+  });
+};

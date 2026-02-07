@@ -1,9 +1,29 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect,useContext } from "react";
 import { getPublicVehicles, assetUrl } from "../../api/api";
 import Navbar from "../../components/Navbar";
-import { Link } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
+import { DataContext } from "../../context/DataContext";
 
 export default function Vehicles() {
+
+  const navigate = useNavigate();
+  // const { isAuthenticated } = useData(); // 
+  const { isAuthenticated,role } = useContext(DataContext);
+
+  const handleRentClick = (vehicleId) => {
+    if (!isAuthenticated) {
+      alert("Please login to rent a vehicle");
+      navigate("/login");
+      return;
+    } 
+    if (role === "owner") {
+      navigate("/owner/vehicles");
+    } else {
+      navigate(`/vehicle/${vehicleId}`);
+    }
+
+  };
+
   const [search, setSearch] = useState("");
   const [location, setLocation] = useState("");
   const [vehicles, setVehicles] = useState([]);
@@ -198,12 +218,12 @@ export default function Vehicles() {
                     <span className="text-xl font-bold text-blue-600">
                       ₹{v.pricePerDay}<span className="text-xs text-gray-400 font-normal"> /day</span>
                     </span>
-                    <Link 
-                      to={`/vehicle/${v._id || v.id}`} 
-                      className="bg-blue-600 text-white px-5 py-2 rounded-lg text-sm font-bold hover:bg-blue-700 transition-colors shadow-sm"
-                    >
-                      Rent Now
-                    </Link>
+                   <button 
+  onClick={() => handleRentClick(v._id || v.id)}
+  className="bg-blue-600 text-white px-5 py-2 rounded-lg text-sm font-bold hover:bg-blue-700 transition-colors shadow-sm"
+>
+  Rent Now
+</button>
                   </div>
                 </div>
               </div>

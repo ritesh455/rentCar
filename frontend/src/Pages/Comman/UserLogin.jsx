@@ -105,11 +105,12 @@ export default function UserLogin() {
             {loading ? "Logging in..." : "Login"}
           </button>
         </form>
+        
 
         {/* Optional register link only for users */}
-        {role === "user" && (
+        {(
           <p className="text-center text-sm mt-4">
-            Don’t have an account?{" "}
+            Don’t  have an account?{" "}
             <span
               className="text-green-600 cursor-pointer font-medium"
               onClick={() => navigate("/register")}

@@ -137,10 +137,10 @@ export default function VehicleDetails() {
                   <p className="text-gray-500 mt-1 font-medium">{vehicle.seats} Seats • {vehicle.fuelType}  •  Vehicle Reg.No- {vehicle.vehicleNumber} </p>
                   
                   <div className="mt-6 grid grid-cols-2 gap-y-2 text-sm text-green-600 font-semibold">
-                    <span>✔ Free Cancellation</span>
+                    <span>✔ RC Proof</span>
                     <span>✔ Price Guarantee</span>
-                    <span>✔ 24/7 Support</span>
-                    <span>✔ Insurance Included</span>
+                    <span>✔ NOC Proof</span>
+                    <span>✔ Book now</span>
                   </div>
                 </div>
               </div>

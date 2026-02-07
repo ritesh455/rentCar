@@ -10,10 +10,12 @@ function HomePages() {
 
   // ✅ ROLE BASED ACTION
   const handlePrimaryAction = () => {
+    if (role === "owner"){
     if (!isAuthenticated) {
       navigate("/login");
       return;
     }
+  }
 
     if (role === "owner") {
       navigate("/owner/vehicles");
@@ -56,7 +58,9 @@ function HomePages() {
               {getButtonText()}
             </button>
 
-            <button className="px-6 py-3 rounded-xl border border-white text-white hover:bg-white hover:text-black transition">
+            <button 
+             onClick={() => navigate('/about')}
+            className="px-6 py-3 rounded-xl border border-white text-white hover:bg-white hover:text-black transition">
               About Us
             </button>
           </div>
